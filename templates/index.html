@@ -1,0 +1,401 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Perfect Love Letter Generator</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet" />
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <style>
+      :root {
+        --primary: #e91e63;
+        --secondary: #ff80ab;
+        --background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        background: var(--background);
+        font-family: "Poppins", sans-serif;
+        min-height: 100vh;
+        padding: 2rem;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .header {
+        text-align: center;
+        padding: 2rem 0;
+      }
+
+      .title {
+        font-family: "Dancing Script", cursive;
+        color: var(--primary);
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        animation: float 3s ease-in-out infinite;
+      }
+      .subtitle {
+        color: var(--primary);
+        font-size: 1rem;
+        margin-bottom: 1rem;
+        animation: float 3s ease-in-out infinite;
+      }
+
+      .form-container {
+        background: rgba(255, 255, 255, 0.95);
+        padding: 2rem;
+        border-radius: 20px;
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        margin: 2rem auto;
+        max-width: 600px;
+      }
+
+      .input-group {
+        margin: 1.5rem 0;
+      }
+
+      input,
+      textarea,
+      button {
+        width: 100%;
+        padding: 1rem;
+        border: 2px solid #ffe0e0;
+        border-radius: 10px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      input:focus,
+      textarea:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 10px rgba(233, 30, 99, 0.1);
+        outline: none;
+      }
+
+      .file-upload {
+        position: relative;
+        overflow: hidden;
+      }
+
+      #imageUpload {
+        position: absolute;
+        left: -9999px;
+      }
+
+      .upload-label {
+        display: block;
+        background: var(--primary);
+        color: white;
+        padding: 1rem 2rem;
+        border-radius: 30px;
+        cursor: pointer;
+        text-align: center;
+        transition: transform 0.3s ease;
+      }
+
+      .preview-container {
+        margin: 1rem 0;
+        position: relative;
+        aspect-ratio: 1;
+        border-radius: 15px;
+        overflow: hidden;
+        background: #fff3f3;
+      }
+
+      #imagePreview {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      button[type="submit"] {
+        background: var(--primary);
+        color: white;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        margin-top: 1rem;
+      }
+
+      .result-card {
+        display: none;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        margin: 2rem auto;
+        max-width: 2800px;
+        min-height: 500px;
+      }
+
+      .card-content {
+        display: flex;
+        gap: 2rem;
+        padding: 2rem;
+        height: 100%;
+      }
+
+      .card-image {
+        flex: 1;
+        border-radius: 15px;
+        overflow: hidden;
+        min-height: 400px;
+        position: relative;
+      }
+
+      #resultImage {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+
+      .love-letter {
+        flex: 1;
+        font-family: "Dancing Script", cursive;
+        font-size: 1.4rem;
+        line-height: 1.8;
+        color: #555;
+        padding: 1rem;
+        overflow-y: auto;
+      }
+
+      .download-section {
+        padding: 1.5rem;
+        text-align: center;
+        border-top: 2px solid #ffe0e0;
+      }
+
+      .download-btn {
+        background: var(--primary);
+        color: white;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        transition: transform 0.3s ease;
+      }
+
+      strong {
+        color: #e91e63;
+        font-weight: normal;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      .loading {
+        display: none;
+        text-align: center;
+        padding: 2rem;
+        font-size: 2rem;
+        color: var(--primary);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1 class="title">Perfect Ai Love Letter Creator 💕</h1>
+        <small class="subtitle"
+          >Express Your Emotions with Our Love Letter Generator</small
+        >
+      </div>
+
+      <form id="letterForm" class="form-container">
+        <div class="input-group">
+          <input type="text" id="userName" placeholder="Your Name" required />
+        </div>
+
+        <div class="input-group">
+          <input
+            type="text"
+            id="loverName"
+            placeholder="Beloved's Name"
+            required />
+        </div>
+
+        <div class="input-group">
+          <textarea
+            id="specialContent"
+            placeholder="Special memories or details..."
+            required></textarea>
+        </div>
+
+        <div class="input-group file-upload">
+          <input type="file" id="imageUpload" accept="image/*" />
+          <label for="imageUpload" class="upload-label">📸 Upload Photo</label>
+        </div>
+
+        <div class="preview-container">
+          <img id="imagePreview" alt="Image preview" />
+        </div>
+
+        <button type="submit">✨ Generate Love Letter</button>
+      </form>
+
+      <div class="loading">💕 Creating your romantic masterpiece...</div>
+
+      <div class="result-card">
+        <div class="card-content">
+          <div class="card-image">
+            <img id="resultImage" alt="Uploaded image" />
+          </div>
+          <div class="love-letter" id="loveLetter"></div>
+        </div>
+        <div class="download-section">
+          <button class="download-btn" onclick="saveCard()">
+            💾 Download Perfect Card
+          </button>
+        </div>
+      </div>
+    </div>
+    <br />
+    <center><small class="subtitle">Powerd by pettah ai</small></center>
+
+    <script>
+      // Image Preview
+      document
+        .getElementById("imageUpload")
+        .addEventListener("change", function (e) {
+          const file = e.target.files[0];
+          const preview = document.getElementById("imagePreview");
+
+          if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+              preview.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+          }
+        });
+
+      // Form Submission
+      document
+        .getElementById("letterForm")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const form = e.target;
+          const loading = document.querySelector(".loading");
+          const resultCard = document.querySelector(".result-card");
+
+          form.style.display = "none";
+          loading.style.display = "block";
+          resultCard.style.display = "none";
+
+          const formData = new FormData();
+          formData.append(
+            "user_name",
+            document.getElementById("userName").value
+          );
+          formData.append(
+            "lover_name",
+            document.getElementById("loverName").value
+          );
+          formData.append(
+            "special_content",
+            document.getElementById("specialContent").value
+          );
+          formData.append(
+            "image",
+            document.getElementById("imageUpload").files[0]
+          );
+
+          try {
+            const response = await fetch("/generate", {
+              method: "POST",
+              body: formData,
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+              document.getElementById("loveLetter").innerHTML = data.love_letter
+                .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+                .replace(/\n/g, "<br>");
+
+              if (data.image_path) {
+                document.getElementById(
+                  "resultImage"
+                ).src = `/uploads/${data.image_path}`;
+              }
+              resultCard.style.display = "block";
+            } else {
+              alert("Error: " + data.error);
+            }
+          } catch (error) {
+            alert("Connection error: " + error.message);
+          } finally {
+            loading.style.display = "none";
+            form.style.display = "block";
+          }
+        });
+
+      // Save Card
+      function saveCard() {
+        const loader = document.createElement("div");
+        loader.style = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                border: 4px solid #f3f3f3;
+                border-top: 4px solid ${getComputedStyle(
+                  document.documentElement
+                ).getPropertyValue("--primary")};
+                border-radius: 50%;
+                width: 40px;
+                height: 40px;
+                animation: spin 1s linear infinite;
+            `;
+        document.body.appendChild(loader);
+
+        html2canvas(document.querySelector(".result-card"), {
+          scale: 2,
+          useCORS: true,
+          logging: true,
+          scrollY: -window.scrollY,
+        }).then((canvas) => {
+          const link = document.createElement("a");
+          link.download = "perfect-love-card.png";
+          link.href = canvas.toDataURL();
+          link.click();
+          document.body.removeChild(loader);
+        });
+      }
+
+      // CSS Animation
+      const style = document.createElement("style");
+      style.textContent = `
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+        `;
+      document.head.appendChild(style);
+    </script>
+  </body>
+</html>
